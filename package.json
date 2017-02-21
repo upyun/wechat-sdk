@@ -1,0 +1,24 @@
+{
+  "name": "upyun-wxapp-sdk",
+  "version": "1.0.0",
+  "description": "upyun sdk for wxapp",
+  "main": "upyun-wxapp-sdk.js",
+  "scripts": {},
+  "author": "zhongchiyu@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^0.13.1",
+    "standard": "^8.6.0"
+  },
+  "scripts": {
+    "precommit": "npm run lint",
+    "lint": "standard"
+  },
+  "standard": {
+    "globals": [
+      "wx",
+      "App",
+      "Page"
+    ]
+  }
+}
