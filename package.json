@@ -12,7 +12,8 @@
   },
   "scripts": {
     "precommit": "npm run lint",
-    "lint": "standard"
+    "lint": "standard",
+    "demo": "node ./demo-server.js"
   },
   "standard": {
     "globals": [

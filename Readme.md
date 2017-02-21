@@ -19,7 +19,7 @@
 
 运行服务器进程
 
-    FILE_UPLOAD_SECRET=<表单提交密钥> node demo-server.js
+    npm run demo
 
 ## 接口
 

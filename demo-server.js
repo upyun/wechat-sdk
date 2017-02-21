@@ -1,5 +1,5 @@
 'use strict'
-let secret = process.env.FILE_UPLOAD_SECRET
+const secret = 'Mv83tlocuzkmfKKUFbz2s04FzTw='
 if (!secret) {
   console.error('通过环境变量 FILE_UPLOAD_SECRET 设置表单提交密钥')
 }
