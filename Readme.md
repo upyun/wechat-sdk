@@ -58,7 +58,7 @@ upyun.upload({
 })
 ```
 
-## 其他
+## 服务器接口
 
 计算 `signature` 的服务器接口 `getSignatureUrl` 接受 `GET` 请求，带有 `policy` 参数，返回 `signature`
 
@@ -67,3 +67,9 @@ upyun.upload({
     md5(policy + '&' + secret)
 
 其中，`secret` 是表单提交密钥
+
+## 相关链接
+
+* [微信小程序 uploadFile 接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-file.html#wxuploadfileobject)
+* [又拍云表单 API](https://docs.upyun.com/api/form_api/)
+* [又拍云 policy 算法](https://docs.upyun.com/api/authorization/#policy)
