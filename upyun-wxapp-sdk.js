@@ -17,12 +17,7 @@ Upyun.prototype.upload = function (options) {
     date: date
   }
   var policy = Base64.encode(JSON.stringify(opts))
-  var data = {
-    method: 'POST',
-    uri: '/' + self.bucket,
-    date: date,
-    policy: policy
-  }
+  var data = [ 'POST', '/' + self.bucket, date, policy ].join('&')
   self.getSignature(data, function (err, signature) {
     if (err) {
       options.fail && options.fail(err)
@@ -47,7 +42,9 @@ Upyun.prototype.upload = function (options) {
 Upyun.prototype.getSignature = function (data, cb) {
   wx.request({
     url: this.getSignatureUrl,
-    data: data,
+    data: {
+      data: data
+    },
     success: function (res) {
       cb(null, res.data.signature)
     },

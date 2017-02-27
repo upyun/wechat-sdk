@@ -12,8 +12,7 @@ const server = http.createServer((req, res) => {
   const query = qs.parse(url.parse(req.url).query)
   console.log('query', query)
 
-  const data = [query.method, query.uri, query.date, query.policy]
-  const signature = base64Sha1(data.join('&'), md5Password)
+  const signature = base64Sha1(query.data, md5Password)
   console.log('signature', signature)
 
   res.writeHead(200, {

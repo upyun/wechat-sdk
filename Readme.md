@@ -60,16 +60,18 @@ upyun.upload({
 
 ## 服务器接口
 
-计算 `signature` 的服务器接口 `getSignatureUrl` 接受 `GET` 请求，带有 `policy` 参数，返回 `signature`
+使用又拍云微信小程序 SDK 需要实现一个在服务器进行签名的接口，并将该接口地址作为 `getSignatureUrl` 传入构造函数，
+
+该接口接受 `GET` 请求，并接受一个参数 `data`，计算并返回带有 `signature` 字段的响应
 
 `signature` 的计算公式是
 
-    md5(policy + '&' + secret)
+    Base64 (HMAC-SHA1 (<md5_password>, <data>)
 
-其中，`secret` 是表单提交密钥
+其中，`md5_password` 是操作员密码的 MD5 值
 
 ## 相关链接
 
 * [微信小程序 uploadFile 接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-file.html#wxuploadfileobject)
 * [又拍云表单 API](https://docs.upyun.com/api/form_api/)
-* [又拍云 policy 算法](https://docs.upyun.com/api/authorization/#policy)
+* [又拍云表单提交签名算法](http://docs.upyun.com/api/authorization/#body)
