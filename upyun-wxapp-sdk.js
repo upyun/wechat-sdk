@@ -9,13 +9,21 @@ Upyun.prototype.upload = function (options) {
   if (!options.remotePath) {
     options.remotePath = options.localPath.split('//')[1]
   }
+  var date = (new Date()).toGMTString()
   var opts = {
     'save-key': options.remotePath,
     bucket: self.bucket,
-    expiration: Math.round(new Date().getTime() / 1000) + 3600
+    expiration: Math.round(new Date().getTime() / 1000) + 3600,
+    date: date
   }
   var policy = Base64.encode(JSON.stringify(opts))
-  self.getSignature(policy, function (err, signature) {
+  var data = {
+    method: 'POST',
+    uri: '/' + self.bucket,
+    date: date,
+    policy: policy
+  }
+  self.getSignature(data, function (err, signature) {
     if (err) {
       options.fail && options.fail(err)
       options.complete && options.complete(err)
@@ -26,8 +34,8 @@ Upyun.prototype.upload = function (options) {
       filePath: options.localPath,
       name: 'file',
       formData: {
-        policy: policy,
-        signature: signature
+        authorization: `UPYUN ${self.operator}:${signature}`,
+        policy: policy
       },
       success: options.success,
       fail: options.fail,
@@ -36,12 +44,10 @@ Upyun.prototype.upload = function (options) {
   })
 }
 
-Upyun.prototype.getSignature = function (policy, cb) {
+Upyun.prototype.getSignature = function (data, cb) {
   wx.request({
     url: this.getSignatureUrl,
-    data: {
-      policy: policy
-    },
+    data: data,
     success: function (res) {
       cb(null, res.data.signature)
     },
