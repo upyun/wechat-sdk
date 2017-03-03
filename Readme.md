@@ -1,5 +1,7 @@
 # 又拍云微信小程序 SDK
 
+[又拍云](https://upyun.com) [微信小程序 SDK](http://docs.upyun.com/api/small_program/)，帮助你在存储空间、资源存放、访问加速、资源处理等方面进行大幅优化，为微信小程序提供扩容、加速解决方案。
+
 ## 使用
 
 使用方式可以参考 demo
