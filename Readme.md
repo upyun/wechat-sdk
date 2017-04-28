@@ -6,9 +6,10 @@
 
 使用方式可以参考 demo
 
-1. 软链 upyun-wxapp-sdk.js 到微信小程序项目
-2. 通过 `require` 引入 `Upyun` 类，并初始化一个实例
-3. 调用 `upyun.upload` 方法上传文件
+1. 登录微信小程序账户并配置 uploadFile 合法域名为 https://v0.api.upyun.com
+2. 软链 upyun-wxapp-sdk.js 到微信小程序项目
+3. 通过 `require` 引入 `Upyun` 类，并初始化一个实例
+4. 调用 `upyun.upload` 方法上传文件
 
 
 ## 运行 Demo
