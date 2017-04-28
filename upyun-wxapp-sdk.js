@@ -25,7 +25,7 @@ Upyun.prototype.upload = function (options) {
       return
     }
     wx.uploadFile({
-      url: `http://v0.api.upyun.com/${self.bucket}`,
+      url: `https://v0.api.upyun.com/${self.bucket}`,
       filePath: options.localPath,
       name: 'file',
       formData: {
