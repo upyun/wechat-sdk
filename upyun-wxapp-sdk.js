@@ -1,15 +1,17 @@
-function Upyun (options) {
+import wepy from 'wepy'
+
+function Upyun(options) {
   this.bucket = options.bucket
   this.operator = options.operator
   this.getSignatureUrl = options.getSignatureUrl
 }
 
-Upyun.prototype.upload = function (options) {
+Upyun.prototype.upload = function(options) {
   var self = this
   if (!options.remotePath) {
     options.remotePath = options.localPath.split('//')[1]
   }
-  var date = (new Date()).toGMTString()
+  var date = new Date().toGMTString()
   var opts = {
     'save-key': options.remotePath,
     bucket: self.bucket,
@@ -17,14 +19,14 @@ Upyun.prototype.upload = function (options) {
     date: date
   }
   var policy = Base64.encode(JSON.stringify(opts))
-  var data = [ 'POST', '/' + self.bucket, date, policy ].join('&')
-  self.getSignature(data, function (err, signature) {
+  var data = ['POST', '/' + self.bucket, date, policy].join('&')
+  self.getSignature(data, function(err, signature) {
     if (err) {
       options.fail && options.fail(err)
       options.complete && options.complete(err)
       return
     }
-    wx.uploadFile({
+    wepy.uploadFile({
       url: `https://v0.api.upyun.com/${self.bucket}`,
       filePath: options.localPath,
       name: 'file',
@@ -39,16 +41,52 @@ Upyun.prototype.upload = function (options) {
   })
 }
 
-Upyun.prototype.getSignature = function (data, cb) {
-  wx.request({
+Upyun.prototype.del = function(options) {
+  var self = this
+  if (!options.remotePath) {
+    options.remotePath = options.localPath.split('//')[1]
+  }
+  var date = new Date().toGMTString()
+  var opts = {
+    'save-key': options.remotePath,
+    bucket: self.bucket,
+    expiration: Math.round(new Date().getTime() / 1000) + 3600,
+    date: date
+  }
+  var policy = Base64.encode(JSON.stringify(opts))
+  var data = ['DELETE', '/' + self.bucket + options.remotePath, date].join('&')
+  self.getSignature(data, function(err, signature) {
+    if (err) {
+      options.fail && options.fail(err)
+      options.complete && options.complete(err)
+      return
+    }
+    wepy.request({
+      url: `https://v0.api.upyun.com/${self.bucket}${options.remotePath}`,
+      method: 'DELETE',
+      header: {
+        'content-type': 'application/json',
+        'authorization': `UPYUN ${self.operator}:${signature}`,
+        'policy': `${policy}`,
+        'X-Date': `${date}`
+      },
+      success (res) {
+        console.log('delete:'.res.data)
+      }
+    })
+  })
+}
+
+Upyun.prototype.getSignature = function(data, cb) {
+  wepy.request({
     url: this.getSignatureUrl,
     data: {
       data: data
     },
-    success: function (res) {
+    success: function(res) {
       cb(null, res.data.signature)
     },
-    fail: function (err) {
+    fail: function(err) {
       cb(err)
     }
   })
@@ -59,7 +97,7 @@ var Base64 = {
   // private property
   _keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
   // public method for encoding
-  encode: function (input) {
+  encode: function(input) {
     var output = ''
     var chr1, chr2, chr3, enc1, enc2, enc3, enc4
     var i = 0
@@ -77,14 +115,17 @@ var Base64 = {
       } else if (isNaN(chr3)) {
         enc4 = 64
       }
-      output = output +
-        this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
-        this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4)
+      output =
+        output +
+        this._keyStr.charAt(enc1) +
+        this._keyStr.charAt(enc2) +
+        this._keyStr.charAt(enc3) +
+        this._keyStr.charAt(enc4)
     }
     return output
   },
   // public method for decoding
-  decode: function (input) {
+  decode: function(input) {
     var output = ''
     var chr1, chr2, chr3
     var enc1, enc2, enc3, enc4
@@ -110,14 +151,14 @@ var Base64 = {
     return output
   },
   // private method for UTF-8 encoding
-  _utf8_encode: function (string) {
+  _utf8_encode: function(string) {
     string = string.replace(/\r\n/g, '\n')
     var utftext = ''
     for (var n = 0; n < string.length; n++) {
       var c = string.charCodeAt(n)
       if (c < 128) {
         utftext += String.fromCharCode(c)
-      } else if ((c > 127) && (c < 2048)) {
+      } else if (c > 127 && c < 2048) {
         utftext += String.fromCharCode((c >> 6) | 192)
         utftext += String.fromCharCode((c & 63) | 128)
       } else {
@@ -129,23 +170,25 @@ var Base64 = {
     return utftext
   },
   // private method for UTF-8 decoding
-  _utf8_decode: function (utftext) {
+  _utf8_decode: function(utftext) {
     var string = ''
     var i = 0
-    var c = c1 = c2 = 0
+    var c = (c1 = c2 = 0)
     while (i < utftext.length) {
       c = utftext.charCodeAt(i)
       if (c < 128) {
         string += String.fromCharCode(c)
         i++
-      } else if ((c > 191) && (c < 224)) {
+      } else if (c > 191 && c < 224) {
         c2 = utftext.charCodeAt(i + 1)
         string += String.fromCharCode(((c & 31) << 6) | (c2 & 63))
         i += 2
       } else {
         c2 = utftext.charCodeAt(i + 1)
         c3 = utftext.charCodeAt(i + 2)
-        string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
+        string += String.fromCharCode(
+          ((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63)
+        )
         i += 3
       }
     }
